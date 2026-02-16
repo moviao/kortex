@@ -1,0 +1,13 @@
+build/
+.gradle/
+.idea/
+*.iml
+.git/
+.env
+models/*.gguf
+
+#*
+#!build/*-runner
+#!build/*-runner.jar
+#!build/lib/*
+#!build/quarkus-app/*

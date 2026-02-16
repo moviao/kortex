@@ -1,0 +1,67 @@
+# Gradle
+.gradle/
+build/
+
+# Eclipse
+.project
+.classpath
+.settings/
+bin/
+
+# IntelliJ
+.idea
+*.ipr
+*.iml
+*.iws
+
+# NetBeans
+nb-configuration.xml
+
+# Visual Studio Code
+.vscode
+.factorypath
+
+# OSX
+.DS_Store
+
+# Vim
+*.swp
+*.swo
+
+# patch
+*.orig
+*.rej
+
+# Local environment
+.env
+
+# Plugin directory
+/.quarkus/cli/plugins/
+
+# TLS Certificates
+.certs/
+
+# ── Kortex specific ──────────────────────────────────────────
+
+# GGUF model files (large binaries, never commit)
+models/*.gguf
+
+# Keep the models directory itself
+!models/.gitkeep
+
+# Docker volumes
+docker-data/
+
+# Native binary output
+*-runner
+*-runner.exe
+
+# Uber-JAR output
+*-runner.jar
+
+# Quarkus build artifacts
+.quarkus/
+
+# Logs
+*.log
+logs/

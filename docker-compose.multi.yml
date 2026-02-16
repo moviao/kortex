@@ -1,0 +1,72 @@
+# Run multiple models simultaneously on different ports
+# Usage: docker compose -f docker-compose.multi.yml up -d
+# Then point your Quarkus server at whichever port you want.
+
+services:
+  # ── Small & Fast: Qwen 2.5 1.5B ────────────────────────────
+  llama-qwen:
+    image: ghcr.io/ggml-org/llama.cpp:server
+    container_name: llama-qwen
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./models:/models:ro
+    environment:
+      LLAMA_ARG_MODEL: /models/qwen2.5-1.5b-instruct-q4_k_m.gguf
+      LLAMA_ARG_CTX_SIZE: "4096"
+      LLAMA_ARG_HOST: "0.0.0.0"
+      LLAMA_ARG_PORT: "8080"
+      LLAMA_ARG_THREADS: "4"
+    restart: unless-stopped
+
+  # ── Tiny: TinyLlama 1.1B ───────────────────────────────────
+  llama-tiny:
+    image: ghcr.io/ggml-org/llama.cpp:server
+    container_name: llama-tiny
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./models:/models:ro
+    environment:
+      LLAMA_ARG_MODEL: /models/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf
+      LLAMA_ARG_CTX_SIZE: "2048"
+      LLAMA_ARG_HOST: "0.0.0.0"
+      LLAMA_ARG_PORT: "8080"
+      LLAMA_ARG_THREADS: "2"
+    restart: unless-stopped
+
+  # ── Strong: Phi-3 Mini 3.8B ────────────────────────────────
+  llama-phi3:
+    image: ghcr.io/ggml-org/llama.cpp:server
+    container_name: llama-phi3
+    ports:
+      - "8083:8080"
+    volumes:
+      - ./models:/models:ro
+    environment:
+      LLAMA_ARG_MODEL: /models/Phi-3-mini-4k-instruct-q4.gguf
+      LLAMA_ARG_CTX_SIZE: "4096"
+      LLAMA_ARG_HOST: "0.0.0.0"
+      LLAMA_ARG_PORT: "8080"
+      LLAMA_ARG_THREADS: "4"
+    restart: unless-stopped
+
+  # ── Quarkus gateway (routes to all models) ──────────────────
+  llm-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: llm-server
+    ports:
+      - "8080:8080"
+    environment:
+      LLAMACPP_BASE_URL: "http://llama-qwen:8080"  # Default backend
+      LLAMACPP_TIMEOUT: "120"
+      MODELS_DIR: "/models"
+    volumes:
+      - ./models:/models:ro
+    depends_on:
+      - llama-qwen
+      - llama-tiny
+      - llama-phi3
+    restart: unless-stopped
